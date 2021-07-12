@@ -1,4 +1,4 @@
-function [TimeTaken] = ParallelProcessing(FileName,HourlyData,NumHours,RadLat,RadLon,RadO3,EnsembleVectorPar,DataSize,Workers)
+function [TimeTakenPara] = ParallelProcessing(FileName,HourlyData,NumHours,RadLat,RadLon,RadO3,EnsembleVectorPar,DataSize,Workers)
 %% 1: Load Data
 
 Lat = ncread(FileName, 'lat');
@@ -67,7 +67,7 @@ end % end time loop
 T2 = toc;
 delete(gcp);
 
-TimeTaken = sum(T3);
+TimeTakenPara = sum(T3);
 
 %% 10: Reshape ensemble values to Lat, lon, hour format
 %EnsembleVectorPar = reshape(EnsembleVectorPar, 696, 396, []);

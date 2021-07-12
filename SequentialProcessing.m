@@ -1,4 +1,4 @@
-function [] = SequentialProcessing(FileName,HourlyData,NumHours,RadLat,RadLon,RadO3)
+function [TimeTakenSeq] = SequentialProcessing(FileName,HourlyData,NumHours,RadLat,RadLon,RadO3,DataSize1)
 %% Function to do sequential processing of model data
 
 Lat = ncread(FileName, 'lat'); % load the latitude locations
@@ -18,7 +18,7 @@ for idxTime = 1:NumHours % loop through each hour
     %% Sequential analysis    
     t1 = toc;
     t2 = t1;
-    for idx = 1: size(Data2Process,1) % step through each data location to process the data
+    for idx = 1: DataSize1 %size(Data2Process,1) % step through each data location to process the data
         
         % The analysis of the data creates an 'ensemble value' for each
         % location. This method is defined by
@@ -40,7 +40,7 @@ for idxTime = 1:NumHours % loop through each hour
     
         
 end
-tSeq = toc;
+TimeTakenSeq = toc;
 
-fprintf('Total time for sequential processing = %.2f s\n\n', tSeq)
+fprintf('Total time for sequential processing = %.2f s\n\n', TimeTakenSeq)
 end

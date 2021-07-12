@@ -10,8 +10,8 @@ FileErrorNan = 'TestFileNan.nc';
 
 %% Editable Variables 
 NumHours = 25;
-Data = [5]; %Size of data to process. Use size(Data2Process,1) to use all data
-PoolValues = [1]; %Number of workers to use
+Data = [250, 500, 750, 1000]; %Size of data to process. Use size(Data2Process,1) to use all data
+PoolValues = [1, 2, 3, 4, 5, 6]; %Number of workers to use
 
 %Costumer defined values
 RadLat = 30.2016;
@@ -26,16 +26,23 @@ if TextErrors || NanErrors
 else
     fprintf('Proceeding with loading and processing.\n')
     [HourlyData, EnsembleVectorPar] = LoadData(FileName,NumHours);
-    %SequentialProcessing(FileName,HourlyData,NumHours,RadLat,RadLon,RadO3);
     
-    GraphData = [];
+    SeqGraphData = [];
+    for idxData1 = 1: length(Data)
+        DataSize1 = Data(idxData1);
+        [TimeTakenSeq] = SequentialProcessing(FileName,HourlyData,NumHours,RadLat,RadLon,RadO3,DataSize1);
+        SeqGraphData = [SeqGraphData; DataSize1, TimeTakenSeq];
+    end
+    writematrix(SeqGraphData,'SeqGraphData.xls')
+    
+    ParaGraphData = [];
     for idxData = 1: length(Data)
         DataSize = Data(idxData);
         for idxPool = 1: length(PoolValues)
             Workers = PoolValues(idxPool);
-            [TimeTaken] = ParallelProcessing(FileName,HourlyData,NumHours,RadLat,RadLon,RadO3,EnsembleVectorPar,DataSize,Workers);
-            GraphData = [GraphData; Workers, DataSize, TimeTaken];
+            [TimeTakenPara] = ParallelProcessing(FileName,HourlyData,NumHours,RadLat,RadLon,RadO3,EnsembleVectorPar,DataSize,Workers);
+            ParaGraphData = [ParaGraphData; Workers, DataSize, TimeTakenPara];
         end
     end
-    writematrix(GraphData,'GraphData.xls') 
+    writematrix(ParaGraphData,'ParaGraphData.xls') 
 end

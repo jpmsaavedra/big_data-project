@@ -4,21 +4,21 @@ clear all
 close all
 
 %% Data Files
-FileName = 'o3_surface_20180701000000.nc';
+FileName = 'Model\o3_surface_20180701000000.nc';
 FileErrorText = 'TestFileText.nc';
 FileErrorNan = 'TestFileNan.nc';
 
 %% Editable Variables 
 NumHours = 25;
-Data = [5, 50];
-PoolValues = [1, 2, 3, 4];
+Data = [5]; %Size of data to process. Use size(Data2Process,1) to use all data
+PoolValues = [1]; %Number of workers to use
 
+%Costumer defined values
 RadLat = 30.2016;
 RadLon = 24.8032;
 RadO3 = 4.2653986e-08;
 
 %% Program flow
-%
 [TextErrors] = TestText(FileName);
 [NanErrors] = TestNan(FileName);
 if TextErrors || NanErrors

@@ -10,8 +10,8 @@ FileErrorNan = 'TestFileNan.nc';
 
 %% Editable Variables 
 NumHours = 25;
-Data = [250, 500, 750, 1000]; %Size of data to process. Use size(Data2Process,1) to use all data
-PoolValues = [1, 2, 3, 4, 5, 6]; %Number of workers to use
+Data = [2500, 5000, 10000]; %Size of data to process. Use size(Data2Process,1) to use all data
+PoolValues = [2, 3, 4, 5, 6]; %Number of workers to use
 
 %Costumer defined values
 RadLat = 30.2016;

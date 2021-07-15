@@ -4,7 +4,8 @@ function [TextErrors] = TestText(FileName)
 %% Define plain text variable types
 DataTypes = {'NC_Byte', 'NC_Char', 'NC_Short', 'NC_Int', 'NC_Float', 'NC_Double'};
 
-%% Test a file
+
+%% Check data types
 TextErrors = 0;
 
 Contents = ncinfo(FileName); % Store the file content information in a variable.
@@ -15,19 +16,24 @@ for idx = 0:size(Contents.Variables,2)-1 % loop through each variable
     [~, datatype(idx+1), ~, ~] = netcdf.inqVar(FileID,idx);
 end
 
-%% display data types
+
+%% Display data types
 DataInFile = DataTypes(datatype)'
 
-%% find character data types
+
+%% Find character data types
 FindText = strcmp('NC_Char', DataInFile);
 
-%% print results
-fprintf('Testing file: %s\n', FileName)
+
+%% Check for Texts
+% Check if any text value is present.
+% Prints result and stores it in TextErrors variable.
+fprintf('Testing file for Text Errors: %s\n', FileName)
 if any(FindText)
     TextErrors = 1;
     fprintf('Error, text variables present.\n')
 else
-    fprintf('All data is numeric, continue analysis.\n')
+    fprintf('All data is numeric.\n')
 end
 
 end

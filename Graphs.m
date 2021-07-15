@@ -2,42 +2,63 @@
 clear all
 close all
 
+%% Time Values
+% 500
+x500Vals = [1,2,3,4,5,6,7,8];
+y500Vals = [156,158,115,93,82,79,75,68];
+
+% 1000
+x1000Vals = [1, 2, 3, 4, 5, 6, 7, 8];
+y1000Vals = [309,295,212,162,135,124,119,112];
+
+% 2500
+x2500Vals = [1, 2, 3, 4, 5, 6, 7, 8];
+y2500Vals = [893,825,568,432,347,293,261,248];
+
+% All Data
+xAllVals = [1, 5, 6, 7, 8];
+yAllVals = [110000,36397,29699,25202,23983];
+
 
 %% Show two plots on different y-axes
-%% 250 data processed
-x1Vals = [2, 3, 4, 5, 6, 7];
-y1Vals = [65, 56, 47, 44, 40, 39];
+%% 500 data processed
 figure(1)
 yyaxis left
-plot(x1Vals, y1Vals, '-bd')
+plot(x500Vals, y500Vals, '-c')
 xlabel('Number of Processors')
 ylabel('Processing time (s)')
 title('Processing time vs number of processors')
 
 
-%% 5,000 data processed
-x2Vals = [2, 3, 4, 5, 6, 7, 8];
-y2Vals = [1560, 1077, 945, 838, 852, 725, 707];
+%% All data processed
 figure(1)
 yyaxis right
-plot(x2Vals, y2Vals, '-rx')
+plot(xAllVals, yAllVals, '-b')
 xlabel('Number of Processors')
 ylabel('Processing time (s)')
 title('Processing time vs number of processors')
 
-legend('250 Data', '5,000 Data')
 
+legend('500 Data', 'All Data')
 
-%% Show two plots on same y-axis
+   
+%% Show multiple plots on same y-axis
 %% Mean processing time
-y1MeanVals = y1Vals / 250;
-y2MeanVals = y2Vals / 5000;
+
+y500MeanVals = y500Vals / 500;
+y1000MeanVals = y1000Vals / 1000;
+y2500MeanVals = y2500Vals / 2500;
+yAllMeanVals = yAllVals / 277804;
 
 figure(2)
-plot(x1Vals, y1MeanVals, '-bd')
+plot(x500Vals, y500MeanVals, '-c')
 hold on
-plot(x2Vals, y2MeanVals, '-rx')
+plot(x1000Vals, y1000MeanVals, '-r')
+hold on
+plot(x2500Vals, y2500MeanVals, '-g')
+hold on
+plot(xAllVals, yAllMeanVals, '-b')
 xlabel('Number of Processors')
 ylabel('Processing time (s)')
 title('Mean Processing time vs number of processors')
-legend('250 Data', '5,000 Data')
+legend('500 Data', '1,000 Data', '2,500 Data', 'All Data')

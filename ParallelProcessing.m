@@ -1,83 +1,100 @@
-function [TimeTakenPara] = ParallelProcessing(FileName,HourlyData,NumHours,RadLat,RadLon,RadO3,EnsembleVectorPar,DataSize,Workers)
-%% 1: Load Data
+function [TimeTakenPara] = ParallelProcessing(FileName, NumWorkers)
+%% Function to Analyze data with multiple workers
+% Takes in FileName as file to be processed. Loops through each
+% hour and first checks for NaN errors within that hour.
+% If it finds a Nan error skips to the next hour, if all is good,
+% loads data for that hour and processes it sequentially.
+% In the end, returns the total time taken to process the file.
 
-Lat = ncread(FileName, 'lat');
-Lon = ncread(FileName, 'lon');
+%% Parameters
+Contents = ncinfo(FileName);
 
-%% 4: Cycle through the hours and load all the models for each hour and record memory use
-% We use an index named 'NumHour' in our loop
-% The section 'parallel processing' will process the data location one
-% after the other, reporting on the time involved.
-tic
-for idxTime = 1:NumHours   
-    %% 6: Pre-process the data for parallel processing
-    % This takes the 3D array of data [model, lat, lon] and generates the
-    % data required to be processed at each location.
-    % ## This process is defined by the customer ##
-    % If you want to know the details, please ask, but this is not required
-    % for the module or assessment.
-    [Data2Process, LatLon] = PrepareData(HourlyData, Lat, Lon);
-   
-    
+Lat = ncread(FileName, 'lat'); % load the latitude locations
+Lon = ncread(FileName, 'lon'); % load the longitude locations
+
+% Processing parameters provided by customer
+RadLat = 30.2016;
+RadLon = 24.8032;
+RadO3 = 4.2653986e-08;
+
+StartLat = 1; % latitude location to start loading
+NumLat = 400; % number of latitude locations to load
+StartLon = 1; % longitude location to start laoding
+NumLon = 700; % number of longitude locations to load
+NumHours = 25;% number of hours to process
+
+
+%% Pre-allocate output array memory
+% the '-4' value is due to the analysis method resulting in fewer output
+% values than the input array.
+NumLocations = (NumLon - 4) * (NumLat - 4);
+EnsembleVectorPar = zeros(NumLocations, NumHours); % pre-allocate memory
+
+
 %% Parallel Analysis
-    %% 7: Create the parallel pool and attache files for use
-    PoolSize = Workers ; % define the number of processors to use in parallel
-    if isempty(gcp('nocreate'))
-        parpool('local',PoolSize);
+TicPara = tic;
+% Loop through each hour
+for idxTime = 1:25  
+    %% Test hour for NaN errors. 
+    % If present, skips hour, if no error is found, the flow continues.
+    [NaNErrors] = TestNan(FileName,idxTime);
+    if NaNErrors
+        fprintf('Skipping Hour %i...\n\n', idxTime)
+    else
+        %% Data Loading to array HourlyData
+        DataLayer = 1; % which 'layer' of the array to load the model data into
+        for idx = [1, 2, 4, 5, 6, 7, 8] % model data to load
+            % load the model data
+            HourlyData(DataLayer,:,:) = ncread(FileName, Contents.Variables(idx).Name,...
+                [StartLon, StartLat, idxTime], [NumLon, NumLat, 1]);
+            DataLayer = DataLayer + 1; % step to the next 'layer'
+        end
+
+
+        %% Prepare Data
+        % Method for processing data definied by the customer
+        fprintf('Processing hour %i\n', idxTime)
+        [Data2Process, LatLon] = PrepareData(HourlyData, Lat, Lon);
+
+
+        %% Check Memory usage for hour
+        HourDataMem = whos('HourlyData').bytes/1000000;
+        fprintf('Memory used for hour of data: %.3f MB\n', HourDataMem)
+
+
+        %% Parallel Processing
+        % Create the parallel pool and attache files for use
+        PoolSize = NumWorkers; % define the number of processors to use in parallel
+        if isempty(gcp('nocreate'))
+            parpool('OverDrive',PoolSize);
+        end
+        poolobj = gcp;
+        addAttachedFiles(poolobj,{'EnsembleValue'});
+
+        T4 = toc;
+        % The actual parallel processing!
+        % The analysis of the data creates an 'ensemble value' for each
+        % location. This method is defined by customer.
+        parfor idx = 1: 250%size(Data2Process,1)
+            [EnsembleVectorPar(idx, idxTime)] = EnsembleValue(Data2Process(idx,:,:,:), LatLon, RadLat, RadLon, RadO3);
+        end
+
+        T3(idxTime) = toc - T4; % record the parallel processing time for this hour of data
+        fprintf('Parallel processing time for hour %i : %.1f s\n\n', idxTime, T3(idxTime))
+        
+        
     end
-    poolobj = gcp;
-    % attaching a file allows it to be available at each processor without
-    % passing the file each time. This speeds up the process. For more
-    % information, ask your tutor.
-    addAttachedFiles(poolobj,{'EnsembleValue'});
-    
-%     %% 8: Parallel processing is difficult to monitor progress so we define a
-%     % special function to create a wait bar which is updated after each
-%     % process completes an analysis. The update function is defined at the
-%     % end of this script. Each time a parallel process competes it runs the
-%     % function to update the waitbar.
-    %DataQ = parallel.pool.DataQueue; % Create a variable in the parallel pool
-%     
-%     % Create a waitbar and handle top it:
-    %hWaitBar = waitbar(0, sprintf('Time period %i, Please wait ...', idxTime));
-%     % Define the function to call when new data is received in the data queue
-%     % 'DataQ'. See end of script for the function definition.
-    %afterEach(DataQ, @nUpdateWaitbar);
-    %N = size(Data2Process,1); % the total number of data to process
-    %p = 20; % offset so the waitbar shows some colour quickly.
-    
-    %% 9: The actual parallel processing!
-    % Ensemble value is a function defined by the customer to calculate the
-    % ensemble value at each location. Understanding this function is not
-    % required for the module or the assessment, but it is the reason for
-    % this being a 'big data' project due to the processing time (not the
-    % pure volume of raw data alone).
-    T4 = toc;
-    parfor idx = 1: DataSize % size(Data2Process,1)
-        [EnsembleVectorPar(idx, idxTime)] = EnsembleValue(Data2Process(idx,:,:,:), LatLon, RadLat, RadLon, RadO3);
-        %send(DataQ, idx);
-    end
-    
-    %close(hWaitBar); % close the wait bar
-    
-    T3(idxTime) = toc - T4; % record the parallel processing time for this hour of data
-    fprintf('Parallel processing time for hour %i : %.1f s\n', idxTime, T3(idxTime))
-    
-end % end time loop
-T2 = toc;
+end
+
+
+%% Record Time Taken
+% Records total sequential processing time
+TimeTakenPara = toc(TicPara);
+fprintf('Total processing time for %i workers = %.2f s\n\n', NumWorkers, TimeTakenPara);
+
 delete(gcp);
 
-TimeTakenPara = sum(T3);
+%% Reshape ensemble values to Lat, lon, hour format
+EnsembleVectorPar = reshape(EnsembleVectorPar, 696, 396, []);
 
-%% 10: Reshape ensemble values to Lat, lon, hour format
-%EnsembleVectorPar = reshape(EnsembleVectorPar, 696, 396, []);
-fprintf('Total processing time for %i workers = %.2f s\n', PoolSize, sum(T3));
-
-%% 11: ### PROCESSING COMPLETE DATA NEEDS TO BE SAVED  ###
-
-%function nUpdateWaitbar(~) % nested function
-    %waitbar(p/N, hWaitBar,  sprintf('Hour %i, %.3f complete, %i out of %i', idxTime, p/N*100, p, N));
-    %p = p + 1;
-%end
-
-end % end function
+end

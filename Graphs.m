@@ -16,8 +16,19 @@ x2500Vals = [1, 2, 3, 4, 5, 6, 7, 8];
 y2500Vals = [893,825,568,432,347,293,261,248];
 
 % All Data
-xAllVals = [1, 5, 6, 7, 8];
-yAllVals = [110000,36397,29699,25202,23983];
+xAllVals = [5, 6, 7, 8];
+yAllVals = [35644,33455,31858,30556];
+
+
+%% All data processed graph
+% Extrapolation
+figure(3)
+plot(xAllVals, yAllVals, '-b')
+xlabel('Number of Processors')
+ylabel('Processing time (s)')
+title('Processing time vs number of processors')
+
+legend('All Data')
 
 
 %% Show two plots on different y-axes
@@ -33,13 +44,12 @@ title('Processing time vs number of processors')
 %% All data processed
 figure(1)
 yyaxis right
-plot(xAllVals, yAllVals, '-b')
+plot(x2500Vals, y2500Vals, '-b')
 xlabel('Number of Processors')
 ylabel('Processing time (s)')
 title('Processing time vs number of processors')
 
-
-legend('500 Data', 'All Data')
+legend('500 Data', '2500 Data')
 
    
 %% Show multiple plots on same y-axis
@@ -61,4 +71,5 @@ plot(xAllVals, yAllMeanVals, '-b')
 xlabel('Number of Processors')
 ylabel('Processing time (s)')
 title('Mean Processing time vs number of processors')
+
 legend('500 Data', '1,000 Data', '2,500 Data', 'All Data')

@@ -76,9 +76,7 @@ for NumHour = 1:25
             end
         end
         T2(NumHour) = toc - t1; % record the total processing time for this hour
-        fprintf('Hour %i processed - %.2f s\n\n', NumHour, sum(T2));
-        
-        
+        fprintf('Hour %i processed - %.2f s\n\n', NumHour, sum(T2));              
     end
 end
 

@@ -53,9 +53,7 @@ else
     
     %% Record Time Taken
     % Write time taken data from table on a spreadsheet
-    writematrix(TimeTakenTable,'TimeTaken.xls')
-    
-    
+    writematrix(TimeTakenTable,'TimeTaken.xls')       
 end
 
 

@@ -80,9 +80,7 @@ for idxTime = 1:25
         end
 
         T3(idxTime) = toc - T4; % record the parallel processing time for this hour of data
-        fprintf('Parallel processing time for hour %i : %.1f s\n\n', idxTime, T3(idxTime))
-        
-        
+        fprintf('Parallel processing time for hour %i : %.1f s\n\n', idxTime, T3(idxTime))                
     end
 end
 

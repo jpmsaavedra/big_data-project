@@ -75,7 +75,7 @@ for idxTime = 1:25
         % The actual parallel processing!
         % The analysis of the data creates an 'ensemble value' for each
         % location. This method is defined by customer.
-        parfor idx = 1: 250%size(Data2Process,1)
+        parfor idx = 1: size(Data2Process,1)
             [EnsembleVectorPar(idx, idxTime)] = EnsembleValue(Data2Process(idx,:,:,:), LatLon, RadLat, RadLon, RadO3);
         end
 

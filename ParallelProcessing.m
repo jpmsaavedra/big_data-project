@@ -32,6 +32,7 @@ EnsembleVectorPar = zeros(NumLocations, NumHours); % pre-allocate memory
 
 
 %% Parallel Analysis
+tic
 TicPara = tic;
 % Loop through each hour
 for idxTime = 1:25  

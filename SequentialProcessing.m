@@ -25,7 +25,8 @@ NumLon = 700; % number of longitude locations to load
 
 
 %% Sequential Analysis
-TicSec = tic;
+tic
+TicSeq = tic;
 % Loop through each hour
 for NumHour = 1:25    
     %% Test hour for NaN errors. 
@@ -83,7 +84,7 @@ end
 
 %% Record Time Taken
 % Records total sequential processing time
-TimeTakenSeq = toc(TicSec);
+TimeTakenSeq = toc(TicSeq);
 fprintf('Total time for sequential processing = %.2f s\n\n', TimeTakenSeq)
 
 

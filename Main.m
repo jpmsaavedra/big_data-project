@@ -22,6 +22,7 @@ TimeTakenTable = [];          % Table to store time taken
 % Test file for text errors and carry on with sequential and processing of
 % data sequentially and in parallel, recording time taken in a spreadsheet
 
+tic
 TicStart = tic;
 %% Text test
 % Test file for text errors on variables

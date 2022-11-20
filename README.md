@@ -1,4 +1,4 @@
-# Big Data Programming Project - 5011CEM
+# Big Data Programming Project
 
 Program to analyze benefits of parallel processing over sequential processing of a big data file.
 
@@ -30,5 +30,4 @@ taken in each step into a spreadsheet file.
 
 ## Author
 
-Joao Saavedra - 8965518
-monteir4@uni.coventry.ac.uk
+Joao Saavedra
